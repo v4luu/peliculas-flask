@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Películas Disponibles - Página {{ current_page }}{% endblock %}
+
+{% block content %}
+    <section class="movie-list-section">
+        <h2 class="section-title">Películas Disponibles</h2>
+        
+        <!-- Mostrar información de paginación -->
+        <div class="pagination-info">
+            Mostrando {{ (current_page - 1) * per_page + 1 }}-{{ [current_page * per_page, TOTAL_PELICULAS]|min }} de {{ TOTAL_PELICULAS }} películas
+        </div>
+
+
+
+        <section class="movie-list-section">
+            
+            <!-- Barra de búsqueda -->
+            <div class="search-container">
+                <form method="get" action="{{ url_for('index') }}" class="search-form">
+                    <input type="text" 
+                           name="q" 
+                           placeholder="Buscar películas por título..." 
+                           value="{{ search_query }}"
+                           class="search-input">
+                    <button type="submit" class="search-button">
+                        <i class="fas fa-search"></i>
+                    </button>
+                    {% if search_query %}
+                    <a href="{{ url_for('index') }}" class="clear-search">
+                        <i class="fas fa-times"></i> Limpiar
+                    </a>
+                    {% endif %}
+                </form>
+            </div>
+            
+            <!-- Resultados de búsqueda -->
+            {% if search_query and not peliculas %}
+            <div class="no-results">
+                <i class="fas fa-film"></i>
+                <p>No se encontraron películas con "{{ search_query }}"</p>
+            </div>
+            {% else %}
+        
+        <ul class="movie-list">
+            {% for pelicula in peliculas %}
+            <li class="movie-item">
+                <div class="movie-info">
+                    <h3 class="movie-title">{{ pelicula.title }} ({{ pelicula.release_year }})</h3>
+                    <div class="movie-meta">
+                        <span><i class="fas fa-clock"></i> {{ pelicula.length }} min</span>
+                        <span><i class="fas fa-star"></i> {{ pelicula.rating }}</span>
+                        <span><i class="fas fa-tags"></i> {{ pelicula.categories }}</span>
+                        <span class="movie-price">${{ pelicula.rental_rate }}</span>
+                    </div>
+                    <div class="movie-details">
+                        <p class="movie-description">{{ pelicula.description }}</p>
+                        <div class="additional-info">
+                            <span><strong>Costo de reemplazo:</strong> ${{ pelicula.replacement_cost }}</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="movie-actions">
+                    <a href="{{ url_for('rentar', film_id=pelicula.film_id) }}" class="rent-button">
+                        <i class="fas fa-shopping-cart"></i> Rentar
+                    </a>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+
+
+            <!-- Paginación (actualizada para mantener la búsqueda) -->
+            <div class="pagination-controls">
+                {% if current_page > 1 %}
+                    <a href="{{ url_for('index', page=current_page-1, q=search_query) }}" class="pagination-button">
+                        <i class="fas fa-chevron-left"></i> 
+                    </a>
+                {% endif %}
+                
+                <span class="page-numbers">
+                    {% for p in range(1, total_pages + 1) %}
+                        {% if p == current_page %}
+                            <span class="current-page">{{ p }}</span>
+                        {% else %}
+                            <a href="{{ url_for('index', page=p, q=search_query) }}" class="page-number">{{ p }}</a>
+                        {% endif %}
+                    {% endfor %}
+                </span>
+                
+                {% if current_page < total_pages %}
+                    <a href="{{ url_for('index', page=current_page+1, q=search_query) }}" class="pagination-button">
+                         <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </section>
+{% endblock %}

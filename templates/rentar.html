@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <section class="rental-form-section">
+        {% if mensaje %}
+            {% if error %}
+            <div class="confirmation-message error">
+                <div class="message-icon">
+                    <i class="fas fa-exclamation-circle"></i>
+                </div>
+                <div class="message-content">
+                    <h3>{{ mensaje }}</h3>
+                    {% if 'no tiene copias disponibles' in mensaje %}
+                    <div class="suggestions">
+                        <p>Te sugerimos:</p>
+                        <ul>
+                            <li>Intentar con otra película</li>
+                            <li>Volver a intentar más tarde</li>
+                        </ul>
+                    </div>
+                    {% endif %}
+                    <a href="javascript:history.back()" class="back-button">
+                        <i class="fas fa-arrow-left"></i> Intentar nuevamente
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <div class="confirmation-message success">
+                <div class="message-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="message-content">
+                    <h3>{{ mensaje }}</h3>
+                    <div class="receipt-details">
+                        <div class="detail-row">
+                            <span class="detail-label">Película:</span>
+                            <span class="detail-value">{{ pelicula.title }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">ID Cliente:</span>
+                            <span class="detail-value">{{ customer_id }}</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Duración:</span>
+                            <span class="detail-value">{{ pelicula.rental_duration }} días</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Costo total:</span>
+                            <span class="detail-value">${{ pelicula.rental_rate }}</span>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('index') }}" class="back-button">
+                        <i class="fas fa-arrow-left"></i> Volver al catálogo
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+        <div class="rental-header">
+            <h2>Rentar: {{ pelicula.title }} ({{ pelicula.release_year }})</h2>
+            
+            {% if not disponible %}
+            <div class="availability-message not-available">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>Esta película está actualmente agotada</span>
+                <p class="availability-detail">No hay copias disponibles en ninguna tienda</p>
+            </div>
+            {% else %}
+            <div class="availability-message available">
+                <i class="fas fa-check-circle"></i>
+                <span>Disponible para renta</span>
+                <p class="availability-detail">Copias disponibles: {{ pelicula.copias_disponibles }}</p>
+            </div>
+            {% endif %}
+        </div>
+        
+        {% if disponible %}
+        <form method="POST" class="rental-form">
+            <div class="form-group">
+                <label for="customer_id">ID de Cliente*</label>
+                <input type="number" id="customer_id" name="customer_id" required min="1">
+                <i class="fas fa-id-card form-icon"></i>
+                <small class="form-help">Ingrese el número de ID del cliente registrado</small>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="submit-button">
+                    <i class="fas fa-check-circle"></i> Confirmar Renta
+                </button>
+                <a href="{{ url_for('index') }}" class="cancel-button">
+                    <i class="fas fa-times-circle"></i> Cancelar
+                </a>
+            </div>
+        </form>
+        {% endif %}
+        {% endif %}
+    </section>
+{% endblock %}
