@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 # Configuración de la base de datos
 db_config = {
-    'host': 'sakila-db.cz2qkwft4xrw.us-east-1.rds.amazonaws.com',
+    'host': 'sakiladb.c3y2q8yamjxa.us-east-1.rds.amazonaws.com',
     'user': 'admin',
     'password': 'V4lu525.',
     'database': 'sakila'
